@@ -9,16 +9,18 @@
 int num_child = 0;
 pid_t child_pids[Max_child];
 int my_pipe[Max_child][2];
-
+ 
+// signal handler for SIGINT signal
 void sigint_handler(int sig) {
     printf("\nInterruption MESSAGE. Exit Program.\n");
     exit(0);
 }
 
+// main loop for parent process
 void parent_process() {
     sleep(1);
     fflush(stdin);
-    while (1) { // infinite loop
+    while (1) {  // infinite loop
         for (int i = 0; i < Max_child; i++) {
             printf("\nEnter Any Message sending to child %d: ", i+1);
             char message[Msg_buf_size];
@@ -32,7 +34,7 @@ void parent_process() {
         }
     }
 }
-
+// function that runs in each child process
 void child_process(int id) {
     printf("Child %d READ from pipe\n", id+1);
 
@@ -43,8 +45,9 @@ void child_process(int id) {
 }
 
 int main() {
-    signal(SIGINT, sigint_handler);
+    signal(SIGINT, sigint_handler); // set up signal handler for SIGINT signal
 
+    // create pipes and fork child processes
     for (int i = 0; i < Max_child; i++) {
         if (pipe(my_pipe[i]) == -1) {
             printf("Error creating pipe for child %d\n", i+1);
